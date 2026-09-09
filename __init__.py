@@ -1,2 +1,2 @@
-# agents package
-# Each file in this folder is one autonomous agent in the AirGuard pipeline.
+# rag package
+# Retrieval-Augmented Generation helpers for health guideline look-ups.

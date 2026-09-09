@@ -1,0 +1,108 @@
+WHO & EPA Air Quality Health Guidelines — AirGuard Knowledge Base
+==================================================================
+
+AQI 0–50 (Good)
+Air quality is considered satisfactory, and air pollution poses little or no risk.
+No health precautions are needed for the general public. Ideal for all outdoor activities.
+
+AQI 51–100 (Moderate)
+Air quality is acceptable; however, for some pollutants there may be a moderate health
+concern for a very small number of people who are unusually sensitive to air pollution.
+Active children and adults, and people with respiratory disease (asthma), should limit
+prolonged outdoor exertion.
+
+AQI 101–150 (Unhealthy for Sensitive Groups)
+Members of sensitive groups may experience health effects. The general public is unlikely
+to be affected. Sensitive groups include: children, older adults, people with heart or
+lung disease, and people with diabetes. Sensitive individuals should reduce prolonged or
+heavy outdoor exertion.
+
+AQI 151–200 (Unhealthy)
+Everyone may begin to experience health effects. Members of sensitive groups may experience
+more serious health effects. Active children and adults, and people with respiratory disease
+(asthma), should avoid prolonged outdoor exertion. Everyone else, especially children,
+should limit prolonged outdoor exertion.
+
+AQI 201–300 (Very Unhealthy)
+Health alert: everyone may experience more serious health effects. Active children and
+adults, and people with respiratory disease (asthma), should avoid all outdoor exertion.
+Everyone else, especially children, should limit outdoor exertion.
+
+AQI 301+ (Hazardous)
+Health warnings of emergency conditions. The entire population is more likely to be affected.
+Everyone should avoid all outdoor exertion. People with heart or lung disease, older adults,
+and children should remain indoors and keep activity levels low.
+
+PM2.5 Health Effects
+Fine particles (PM2.5) are 2.5 micrometres or smaller in diameter. They can penetrate deep
+into the lungs and even enter the bloodstream, causing cardiovascular and respiratory harm.
+Short-term exposure can cause eye, nose, throat and lung irritation, coughing, sneezing, and
+shortness of breath. Long-term exposure is linked to heart attacks, reduced lung function,
+lung cancer, and premature death.
+WHO guideline: PM2.5 annual mean ≤ 5 µg/m³; 24-hour mean ≤ 15 µg/m³.
+
+PM10 Health Effects
+Particles smaller than 10 micrometres (PM10) include dust, pollen, and mould spores.
+They can irritate the eyes, nose and throat. People with asthma, cardiovascular disease or
+other respiratory conditions are most vulnerable. WHO guideline: PM10 annual mean ≤ 15 µg/m³.
+
+Nitrogen Dioxide (NO₂) Health Effects
+NO₂ is primarily a product of combustion from motor vehicles and power plants.
+Short-term exposures can aggravate respiratory diseases, particularly asthma, leading to
+respiratory symptoms such as coughing, wheezing, or breathing difficulty.
+WHO guideline: annual mean ≤ 10 µg/m³; 24-hour mean ≤ 25 µg/m³.
+
+Ozone (O₃) Health Effects
+Ground-level ozone is created by chemical reactions between NOx and VOCs in sunlight.
+Ozone can cause chest pain, coughing, throat irritation, and airway inflammation.
+It can reduce lung function and worsen bronchitis, emphysema, and asthma.
+Levels are typically highest on hot, sunny afternoons.
+WHO guideline: 8-hour mean ≤ 100 µg/m³.
+
+Sulfur Dioxide (SO₂) Health Effects
+SO₂ is produced by burning fossil fuels and volcanic activity. Short-term exposure causes
+breathing problems, especially in people with asthma. Long-term exposure leads to
+respiratory illness and heart disease.
+WHO guideline: 24-hour mean ≤ 40 µg/m³.
+
+Carbon Monoxide (CO) Health Effects
+CO is produced by incomplete combustion of carbon-based fuels (cars, generators, stoves).
+At high concentrations it prevents oxygen from being absorbed by the body, causing headaches,
+dizziness, weakness, and at very high levels, death. Ensure good ventilation when using
+gas appliances or generators indoors.
+
+Mask Recommendations
+N95 or KN95 respirators filter ≥ 95% of airborne particles when worn correctly.
+They are effective against PM2.5 and most biological particles.
+Standard surgical masks offer limited protection against fine particles.
+For AQI above 150, N95/KN95 masks are recommended for outdoor activities.
+For AQI above 200, avoid outdoor activities even with a mask if possible.
+
+Indoor Air Quality Tips
+Keep windows closed during high pollution periods. Use HEPA air purifiers — look for a CADR
+(Clean Air Delivery Rate) appropriate for your room size. Change air purifier filters
+regularly (typically every 6-12 months). Avoid indoor combustion sources (incense, candles,
+gas stoves without ventilation). Vacuum with a HEPA-filter vacuum cleaner.
+
+Exercise and Air Quality
+Exercising outdoors during poor air quality significantly increases pollutant intake because
+breathing rate and depth increase. On days with AQI above 100, sensitive individuals should
+exercise indoors. On days above 150, everyone should avoid vigorous outdoor exercise.
+Morning hours (before 10 AM) and evenings (after 6 PM) often have lower ozone levels.
+
+Diet and Air Quality
+Antioxidant-rich foods help protect the body from oxidative stress caused by air pollutants.
+Recommended foods: berries (blueberries, strawberries), leafy greens (spinach, kale),
+nuts and seeds, omega-3 fatty acids (fish, flaxseed), green tea.
+Vitamin C, Vitamin E, and beta-carotene are particularly protective against PM2.5 damage.
+
+Children and Air Pollution
+Children breathe more air relative to their body weight than adults and spend more time
+outdoors. Their developing lungs and immune systems are more vulnerable. Air pollution
+is linked to slower lung development, increased asthma risk, and lower cognitive performance
+in children. Schools should monitor AQI and limit outdoor recess when AQI exceeds 100.
+
+Elderly and Air Pollution
+Older adults have decreased lung capacity and often have pre-existing cardiovascular or
+respiratory conditions. They are disproportionately affected by PM2.5 and O₃ exposure.
+Elderly individuals should check AQI daily and stay indoors on unhealthy air days.
