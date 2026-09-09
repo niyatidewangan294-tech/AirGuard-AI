@@ -1,0 +1,11 @@
+flask==3.0.3
+flask-cors==4.0.1
+requests==2.32.3
+python-dotenv==1.0.1
+numpy==1.26.4
+pandas==2.1.4
+scikit-learn==1.5.0
+langchain==0.2.6
+langchain-ibm==0.1.11
+ibm-watsonx-ai==1.0.10
+gunicorn==22.0.0
