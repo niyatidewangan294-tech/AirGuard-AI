@@ -1,2 +1,2 @@
-# rag package
-# Retrieval-Augmented Generation helpers for health guideline look-ups.
+# services package
+# Each file wraps one external service (AQI API, IBM watsonx, Langflow).
