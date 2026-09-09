@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AirGuard AI — Daily Air Quality Action Agent</title>
+  <meta name="description" content="AI-powered daily air quality monitoring and personalised health advice powered by IBM watsonx.ai" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <!-- Chart.js — handles line, bar, and mixed charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     NAVBAR
+     ═══════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <a class="navbar-brand" href="/">
+    🌫️ AirGuard <span>AI</span>
+  </a>
+  <div class="navbar-status">
+    <div class="status-dot loading" id="status-dot"></div>
+    <span id="status-text">Initialising…</span>
+  </div>
+</nav>
+
+<!-- Phase 2: Early warning banner injected here by JS when warnings exist -->
+
+<!-- ═══════════════════════════════════════════════════
+     HERO — City Search
+     ═══════════════════════════════════════════════════ -->
+<section class="hero">
+  <h1>🌍 Daily Air Quality Action Agent</h1>
+  <p>Real-time AQI · IBM watsonx.ai health advice · 24h forecast · RAG advisory · Multi-agent pipeline · Final daily plan</p>
+
+  <form class="search-box" id="search-form" autocomplete="off">
+    <input
+      type="text"
+      id="city-input"
+      placeholder="Enter city name (e.g. Delhi, London, Tokyo…)"
+      value="Delhi"
+      aria-label="City name"
+    />
+    <button type="submit" class="btn btn-primary" id="search-btn">Analyse →</button>
+  </form>
+
+  <div class="city-chips">
+    <span class="chip" data-city="Delhi">Delhi</span>
+    <span class="chip" data-city="Mumbai">Mumbai</span>
+    <span class="chip" data-city="Beijing">Beijing</span>
+    <span class="chip" data-city="London">London</span>
+    <span class="chip" data-city="New York">New York</span>
+    <span class="chip" data-city="Tokyo">Tokyo</span>
+    <span class="chip" data-city="Los Angeles">Los Angeles</span>
+    <span class="chip" data-city="Shanghai">Shanghai</span>
+  </div>
+</section>
+
+<!-- Error banner -->
+<div id="error-banner" class="hidden" style="max-width:1200px;margin:1rem auto;padding:0 1.5rem;">
+  <div class="warning-banner">
+    <span class="icon">❌</span>
+    <span id="error-message">An error occurred.</span>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div id="empty-state" style="text-align:center;padding:4rem 1rem;color:var(--text-muted);">
+  <div style="font-size:3rem;margin-bottom:1rem;">🌫️</div>
+  <p>Loading air quality data…</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN DASHBOARD
+     ═══════════════════════════════════════════════════ -->
+<main class="dashboard hidden" id="dashboard-content">
+
+  <!-- ══════════════════════════════════════════════
+       ROW 1 — AQI Hero + Pollutants
+       ══════════════════════════════════════════════ -->
+
+  <!-- AQI Gauge Card -->
+  <div class="card aqi-hero col-left">
+    <div class="aqi-gauge">
+      <svg width="140" height="140" viewBox="0 0 140 140" class="gauge-ring">
+        <circle class="gauge-bg"   cx="70" cy="70" r="56" />
+        <circle class="gauge-fill" cx="70" cy="70" r="56"
+          id="gauge-fill"
+          style="stroke-dasharray:351.9;stroke-dashoffset:351.9;stroke:#00e400;"
+        />
+      </svg>
+      <div class="aqi-number">
+        <span class="aqi-value" id="aqi-value">—</span>
+        <span class="aqi-unit">AQI</span>
+      </div>
+    </div>
+    <div class="aqi-city" id="aqi-city">—</div>
+    <div class="aqi-badge" id="aqi-badge" style="border:1px solid transparent;">Loading…</div>
+    <div class="aqi-description" id="aqi-description">Fetching air quality data…</div>
+    <div class="source-badge" id="data-source" style="margin-top:0.8rem;justify-content:center;"></div>
+  </div>
+
+  <!-- Pollutant Levels Card -->
+  <div class="card col-right">
+    <div class="card-title">💨 Pollutant Levels</div>
+    <div class="pollutant-grid skeleton-area" id="pollutant-grid"></div>
+    <div id="dominant-pollutant" class="mt-sm"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 2 — Daily Action Plan
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full">
+    <div class="card-title">🌅 What Should I Do Today?</div>
+    <div class="daily-plan-text skeleton-area" id="daily-plan-text">Generating your daily action plan…</div>
+    <div class="mt-sm" style="font-size:0.85rem;color:var(--text-muted);">
+      🏃 Outdoor activity: <strong id="outdoor-advice">—</strong>
+    </div>
+    <div id="pipeline-meta" style="font-size:0.72rem;color:var(--text-muted);margin-top:0.6rem;"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 3 — Health Recommendations + Risk
+       ══════════════════════════════════════════════ -->
+
+  <!-- Recommendations Card -->
+  <div class="card col-left">
+    <div class="card-title">
+      🏥 Personalised Health Advice
+      <span id="model-badge"></span>
+    </div>
+    <ul class="rec-list skeleton-area" id="rec-list"></ul>
+  </div>
+
+  <!-- Health Risk Card -->
+  <div class="card col-right">
+    <div class="card-title">⚠️ Health Risk & Early Warnings</div>
+    <div id="warnings-container" class="skeleton-area"></div>
+    <div class="card-title mt-md">👥 Who Should Be Extra Careful?</div>
+    <div id="vulnerable-groups" class="skeleton-area"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 4 — 24-Hour Forecast (Phase 2 upgraded)
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full">
+    <div class="card-title">📈 24-Hour AQI Forecast
+      <span style="font-size:0.7rem;color:var(--text-muted);font-weight:400;margin-left:0.5rem;">· Linear regression + intra-day variation model</span>
+    </div>
+
+    <!-- Forecast narrative -->
+    <div id="forecast-summary" class="daily-plan-text" style="margin-bottom:0.8rem;font-size:0.88rem;"></div>
+
+    <!-- Phase 2: Best outdoor window badge -->
+    <div class="best-window-badge hidden" id="best-window-badge"></div>
+
+    <!-- Chart -->
+    <div class="chart-container" style="height:220px;margin-top:1rem;">
+      <canvas id="forecast-chart" class="chart-canvas"></canvas>
+    </div>
+
+    <!-- Confidence note -->
+    <div class="sigma-note" id="sigma-note">
+      <span>📊</span><span></span>
+    </div>
+
+    <!-- Phase 2: Hourly forecast table -->
+    <div class="card-title mt-md">🕐 Next 12-Hour Detail</div>
+    <table class="hourly-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Forecast AQI</th>
+          <th>Uncertainty</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+      <tbody id="hourly-table-body">
+        <!-- Filled by dashboard.js renderHourlyTable() -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 5 — 7-Day Historical Chart (Phase 2: PM2.5 overlay)
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full">
+    <div class="card-title">📊 7-Day Historical AQI Trend</div>
+
+    <!-- Phase 2: manual legend (Chart.js legend disabled) -->
+    <div class="chart-legend">
+      <span><span class="legend-dot" style="background:#58a6ff;"></span>AQI (left axis)</span>
+      <span><span class="legend-dot" style="background:#bc8cff;"></span>PM2.5 µg/m³ (right axis)</span>
+    </div>
+
+    <div class="chart-container" style="height:220px;">
+      <canvas id="history-chart" class="chart-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 6 — Phase 2: RAG Health Advisory Panel
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full">
+    <div class="card-title">
+      🔬 RAG Health Advisory
+      <span class="ai-badge" style="color:var(--purple);">Retrieval-Augmented Generation</span>
+    </div>
+    <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:0.8rem;">
+      Ask any air quality health question. AirGuard retrieves the most relevant
+      WHO/EPA guidelines and generates a grounded answer using IBM watsonx.ai.
+    </p>
+
+    <div class="rag-panel">
+      <!-- Suggestion chips -->
+      <div class="rag-suggestion-chips">
+        <span class="rag-chip" onclick="ragChip('Is it safe to exercise outdoors today?')">Is it safe to exercise outdoors?</span>
+        <span class="rag-chip" onclick="ragChip('What mask should I wear in high AQI?')">Which mask for high AQI?</span>
+        <span class="rag-chip" onclick="ragChip('How does PM2.5 affect children?')">PM2.5 and children</span>
+        <span class="rag-chip" onclick="ragChip('What foods help protect against air pollution?')">Protective foods</span>
+        <span class="rag-chip" onclick="ragChip('How to improve indoor air quality?')">Indoor air quality tips</span>
+        <span class="rag-chip" onclick="ragChip('What are the health effects of ozone?')">Ozone health effects</span>
+      </div>
+
+      <!-- Question input -->
+      <div class="rag-input-row">
+        <input
+          type="text"
+          id="rag-input"
+          placeholder="Type your health question here…"
+          aria-label="Health question"
+        />
+        <button class="btn btn-primary btn-sm" id="rag-ask-btn">Ask</button>
+      </div>
+
+      <!-- Answer box -->
+      <div class="rag-answer-box" id="rag-answer"></div>
+
+      <!-- Source chunks (collapsible) -->
+      <details id="rag-sources-wrap" style="display:none;">
+        <summary>📖 Guideline sources retrieved (click to expand)</summary>
+        <div class="rag-sources-list" id="rag-sources-list"></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 7 — Community Actions (Phase 2: mark done)
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full">
+    <div class="card-title">🤝 Community Pollution Reduction Actions</div>
+    <div id="community-container" class="community-section skeleton-area"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 8 — Phase 3: User Profile Personalisation
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full">
+    <div class="card-title">
+      👤 Personalise Your Report
+      <span class="ai-badge" style="color:var(--accent);">Phase 3 — User Profile</span>
+    </div>
+    <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:0.6rem;">
+      Add your profile so AirGuard can tailor health recommendations specifically for you.
+      Your profile is sent to IBM watsonx.ai with every query.
+    </p>
+    <div class="profile-form" id="profile-form">
+      <div class="profile-field">
+        <label for="profile-age">Age Group</label>
+        <select id="profile-age">
+          <option value="">Not specified</option>
+          <option value="child">Child (under 14)</option>
+          <option value="teen">Teen (14–18)</option>
+          <option value="adult">Adult (18–60)</option>
+          <option value="elderly">Elderly (60+)</option>
+        </select>
+      </div>
+      <div class="profile-field">
+        <label for="profile-conditions">Health Conditions</label>
+        <input
+          type="text"
+          id="profile-conditions"
+          placeholder="e.g. asthma, heart disease"
+        />
+      </div>
+      <button class="btn btn-primary btn-sm" id="profile-apply-btn" onclick="applyProfile()">
+        Re-analyse with Profile →
+      </button>
+    </div>
+    <p class="profile-note" id="profile-status"></p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 9 — Phase 3: Multi-Agent System Diagram
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full">
+    <div class="card-title">
+      🤖 Multi-Agent System
+      <span class="ai-badge" style="color:var(--purple);">Phase 3 — Live Pipeline Trace</span>
+    </div>
+
+    <!-- Services status pills -->
+    <div class="services-bar" id="services-bar">
+      <div class="service-pill"><span class="dot off" id="svc-aqicn-dot"></span><span id="svc-aqicn-label">AQICN API</span></div>
+      <div class="service-pill"><span class="dot off" id="svc-watsonx-dot"></span><span id="svc-watsonx-label">IBM watsonx.ai</span></div>
+      <div class="service-pill"><span class="dot off" id="svc-langflow-dot"></span><span id="svc-langflow-label">IBM Langflow</span></div>
+      <div class="service-pill"><span class="dot off" id="svc-rag-dot"></span><span id="svc-rag-label">RAG</span></div>
+    </div>
+
+    <!-- Animated pipeline flow diagram -->
+    <div class="pipeline-diagram" id="pipeline-diagram">
+      <div class="pipeline-step" id="ps-0">
+        <div class="pipeline-node">🌫️<span class="pipeline-node-badge" id="pb-0"></span></div>
+        <div class="pipeline-label">AQI Data Agent</div>
+        <div class="pipeline-duration" id="pd-0"></div>
+      </div>
+      <div class="pipeline-step" id="ps-1">
+        <div class="pipeline-node">🏥<span class="pipeline-node-badge" id="pb-1"></span></div>
+        <div class="pipeline-label">Health Advisory</div>
+        <div class="pipeline-duration" id="pd-1"></div>
+      </div>
+      <div class="pipeline-step" id="ps-2">
+        <div class="pipeline-node">📈<span class="pipeline-node-badge" id="pb-2"></span></div>
+        <div class="pipeline-label">Forecasting Agent</div>
+        <div class="pipeline-duration" id="pd-2"></div>
+      </div>
+      <div class="pipeline-step" id="ps-3">
+        <div class="pipeline-node">🤝<span class="pipeline-node-badge" id="pb-3"></span></div>
+        <div class="pipeline-label">Community Agent</div>
+        <div class="pipeline-duration" id="pd-3"></div>
+      </div>
+      <div class="pipeline-step" id="ps-4">
+        <div class="pipeline-node">🤖<span class="pipeline-node-badge" id="pb-4"></span></div>
+        <div class="pipeline-label">AI Coordinator</div>
+        <div class="pipeline-duration" id="pd-4"></div>
+      </div>
+    </div>
+
+    <!-- Per-agent trace cards (expanded detail) -->
+    <div class="trace-list" id="trace-list">
+      <!-- Filled by renderAgentTrace() in dashboard.js -->
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ROW 10 — Phase 3: Final Daily Action Plan
+       ══════════════════════════════════════════════ -->
+  <div class="card col-full final-plan-card" id="final-plan-card">
+    <div class="card-title">
+      🌟 Final Daily Action Plan
+      <span class="ai-badge" style="color:var(--accent);">AI Coordinator Output</span>
+    </div>
+    <div id="final-plan-headline" class="final-plan-headline skeleton-area">
+      Generating your personalised daily plan…
+    </div>
+    <div class="final-plan-grid" id="final-plan-grid">
+      <!-- 4 plan sections rendered by renderFinalPlan() -->
+    </div>
+    <div id="final-plan-source" class="plan-source-badge hidden"></div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════
+     AI CHAT ASSISTANT (floating widget)
+     ═══════════════════════════════════════════════════ -->
+<button class="chat-toggle" id="chat-toggle" aria-label="Open AI chat assistant" title="Ask AirGuard AI">💬</button>
+
+<div class="chat-panel" id="chat-panel" role="dialog" aria-label="AirGuard AI Chat">
+  <div class="chat-header">
+    <span>🤖 AirGuard AI Assistant</span>
+    <button class="chat-close" id="chat-close" aria-label="Close chat">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-msg bot">
+      Hi! I'm AirGuard AI. Ask me anything about today's air quality, health tips, or what to do. 😊
+    </div>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Ask a question…" aria-label="Chat message" autocomplete="off" />
+    <button class="chat-send" id="chat-send" aria-label="Send">→</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     FOOTER — AQI Scale Reference
+     ═══════════════════════════════════════════════════ -->
+<footer style="max-width:1200px;margin:2rem auto;padding:0 1.5rem 3rem;">
+  <div class="card">
+    <div class="card-title">📖 AQI Scale Reference</div>
+    <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.5rem;">
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;"><div style="width:14px;height:14px;border-radius:3px;background:#00e400;flex-shrink:0;"></div><span>0–50 Good</span></div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;"><div style="width:14px;height:14px;border-radius:3px;background:#ffff00;flex-shrink:0;"></div><span>51–100 Moderate</span></div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;"><div style="width:14px;height:14px;border-radius:3px;background:#ff7e00;flex-shrink:0;"></div><span>101–150 Sensitive Groups</span></div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;"><div style="width:14px;height:14px;border-radius:3px;background:#ff0000;flex-shrink:0;"></div><span>151–200 Unhealthy</span></div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;"><div style="width:14px;height:14px;border-radius:3px;background:#8f3f97;flex-shrink:0;"></div><span>201–300 Very Unhealthy</span></div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;"><div style="width:14px;height:14px;border-radius:3px;background:#7e0023;flex-shrink:0;"></div><span>301+ Hazardous</span></div>
+    </div>
+    <p style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted);">
+      Phases 1–3 complete · IBM watsonx.ai (<code style="font-size:0.72rem;color:var(--accent);">ibm/granite-13b-chat-v2</code>) ·
+      RAG over WHO/EPA guidelines · 5-agent pipeline ·
+      <a href="https://aqicn.org/api/" style="color:var(--accent);">AQI: AQICN</a>
+    </p>
+  </div>
+</footer>
+
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>
